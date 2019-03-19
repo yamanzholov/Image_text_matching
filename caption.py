@@ -147,7 +147,7 @@ def caption_image_beam_search(encoder, decoder, image_path, word_map, beam_size=
     return seq, alphas
 
 
-def visualize_att(image_path, seq, alphas, rev_word_map, smooth=True):
+def return_sentence(image_path, seq, alphas, rev_word_map, smooth=True):
     """
     Visualizes caption with weights at every word.
 
@@ -163,56 +163,37 @@ def visualize_att(image_path, seq, alphas, rev_word_map, smooth=True):
     image = image.resize([14 * 24, 14 * 24], Image.LANCZOS)
 
     words = [rev_word_map[ind] for ind in seq]
+    sentence = " ".join(words)
+    return sentence[8:-6]
 
-    for t in range(len(words)):
-        if t > 50:
-            break
-        plt.subplot(np.ceil(len(words) / 5.), 5, t + 1)
+# if __name__ == '__main__':
+#     parser = argparse.ArgumentParser(description='Show, Attend, and Tell - Tutorial - Generate Caption')
 
-        plt.text(0, 1, '%s' % (words[t]), color='black', backgroundcolor='white', fontsize=12)
-        plt.imshow(image)
-        current_alpha = alphas[t, :]
-        if smooth:
-            alpha = skimage.transform.pyramid_expand(current_alpha.numpy(), upscale=24, sigma=8)
-        else:
-            alpha = skimage.transform.resize(current_alpha.numpy(), [14 * 24, 14 * 24])
-        if t == 0:
-            plt.imshow(alpha, alpha=0)
-        else:
-            plt.imshow(alpha, alpha=0.8)
-        plt.set_cmap(cm.Greys_r)
-        plt.axis('off')
-    plt.show()
+#     parser.add_argument('--img', '-i', help='path to image')
+#     parser.add_argument('--model', '-m', help='path to model')
+#     parser.add_argument('--word_map', '-wm', help='path to word map JSON')
+#     parser.add_argument('--beam_size', '-b', default=5, type=int, help='beam size for beam search')
+#     parser.add_argument('--dont_smooth', dest='smooth', action='store_false', help='do not smooth alpha overlay')
 
+#     args = parser.parse_args()
 
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Show, Attend, and Tell - Tutorial - Generate Caption')
+#     # Load model
+#     checkpoint = torch.load(args.model)
+#     decoder = checkpoint['decoder']
+#     decoder = decoder.to(device)
+#     decoder.eval()
+#     encoder = checkpoint['encoder']
+#     encoder = encoder.to(device)
+#     encoder.eval()
 
-    parser.add_argument('--img', '-i', help='path to image')
-    parser.add_argument('--model', '-m', help='path to model')
-    parser.add_argument('--word_map', '-wm', help='path to word map JSON')
-    parser.add_argument('--beam_size', '-b', default=5, type=int, help='beam size for beam search')
-    parser.add_argument('--dont_smooth', dest='smooth', action='store_false', help='do not smooth alpha overlay')
+#     # Load word map (word2ix)
+#     with open(args.word_map, 'r') as j:
+#         word_map = json.load(j)
+#     rev_word_map = {v: k for k, v in word_map.items()}  # ix2word
 
-    args = parser.parse_args()
+#     # Encode, decode with attention and beam search
+#     seq, alphas = caption_image_beam_search(encoder, decoder, args.img, word_map, args.beam_size)
+#     alphas = torch.FloatTensor(alphas)
 
-    # Load model
-    checkpoint = torch.load(args.model)
-    decoder = checkpoint['decoder']
-    decoder = decoder.to(device)
-    decoder.eval()
-    encoder = checkpoint['encoder']
-    encoder = encoder.to(device)
-    encoder.eval()
-
-    # Load word map (word2ix)
-    with open(args.word_map, 'r') as j:
-        word_map = json.load(j)
-    rev_word_map = {v: k for k, v in word_map.items()}  # ix2word
-
-    # Encode, decode with attention and beam search
-    seq, alphas = caption_image_beam_search(encoder, decoder, args.img, word_map, args.beam_size)
-    alphas = torch.FloatTensor(alphas)
-
-    # Visualize caption and attention of best sequence
-    visualize_att(args.img, seq, alphas, rev_word_map, args.smooth)
+#     # Visualize caption and attention of best sequence
+#     print(return_sentence(args.img, seq, alphas, rev_word_map, args.smooth))

@@ -1,0 +1,8 @@
+tensorflow
+tensorflow_hub
+nltk
+mtranslate
+tqdm
+scipy
+asyncio
+aiohttp
