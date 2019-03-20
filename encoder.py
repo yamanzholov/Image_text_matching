@@ -13,7 +13,7 @@ class Encoder:
         with g.as_default():
             # We will be feeding 1D tensors of text into the graph.
             self.text_input = tf.placeholder(dtype=tf.string, shape=[None])
-            embed = hub.Module("/home/yerlan/HackNU/a-PyTorch-Tutorial-to-Image-Captioning/module_useT")
+            embed = hub.Module("/home/yerlan/HackNU/Jarvis/module_useT")
             self.embedded_text = embed(self.text_input)
             init_op = tf.group([tf.global_variables_initializer(), tf.tables_initializer()])
         g.finalize()
