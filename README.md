@@ -3,9 +3,4 @@ https://drive.google.com/drive/folders/189VY65I_n4RTpQnmLGj7IzVnOF6dmePC for Sho
 Wieights for encoder are available using the link
 https://drive.google.com/drive/folders/1DboEcIMtX6uRHQsedXM1c0oAgN4kyRRB?usp=sharing.
 
-1st hypothesis:
-
-Tried to flip and blur images.
-Did not show any improvement
-
 Any suggestions are welcome.
